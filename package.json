@@ -1,0 +1,39 @@
+{
+  "name": "hospital-management-system",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Hospital Management System (HMS) with patient registration, doctor scheduling, electronic medical records, role-based access control, and billing management.",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "setup-db": "node scripts/setup-db.js",
+    "test": "node scripts/test-api.js"
+  },
+  "keywords": [
+    "hospital-management-system",
+    "healthcare",
+    "ehr",
+    "patient-portal",
+    "doctor-scheduling",
+    "nodejs",
+    "express",
+    "mysql",
+    "fullstack",
+    "rest-api"
+  ],
+  "author": "V. Saravanapandi",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexCare Health | Enterprise Hospital Management System (HMS)</title>
+  <meta name="description" content="Production-ready healthcare platform for patient intake, physician scheduling, electronic health records (EHR), and billing.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core Healthcare Design System -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div id="app-container">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="app-sidebar" id="app-sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <i class="bi bi-hospital"></i>
+      </div>
+      <div class="brand-details">
+        <h1>ApexCare HMS</h1>
+        <span>Clinical Platform</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Modules</div>
+      <a class="nav-item active" data-view="overview">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="patients">
+        <i class="bi bi-people"></i>
+        <span>Patients Registry</span>
+      </a>
+      <a class="nav-item" data-view="doctors">
+        <i class="bi bi-person-badge"></i>
+        <span>Doctors & Staff</span>
+      </a>
+      <a class="nav-item" data-view="appointments">
+        <i class="bi bi-calendar2-check"></i>
+        <span>Appointments</span>
+      </a>
+
+      <div class="nav-label">Clinical & Finance</div>
+      <a class="nav-item" data-view="records">
+        <i class="bi bi-file-earmark-medical"></i>
+        <span>Medical EHR</span>
+      </a>
+      <a class="nav-item" data-view="billing">
+        <i class="bi bi-credit-card-2-front"></i>
+        <span>Billing & Ledger</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-meta">
+        <div class="user-avatar" id="user-display-avatar">R</div>
+        <div class="user-text">
+          <div class="user-name" id="user-display-name">Dr. Robert Vance</div>
+          <span class="user-role-badge" id="user-display-role">admin</span>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="color: #cbd5e1; border-color: rgba(255,255,255,0.2);" onclick="window.openRoleSwitcherModal()" title="Switch User Role">
+        <i class="bi bi-arrow-left-right"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="app-main">
+    <!-- Topbar Header -->
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="page-title-box">
+          <h2 id="current-page-title">Executive Dashboard</h2>
+          <div class="breadcrumb" id="current-breadcrumb">Hospital Overview & Real-Time KPIs</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="system-status-pill">
+          <div class="status-dot"></div>
+          <span>Clinical Cluster Online</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="window.openRoleSwitcherModal()">
+          <i class="bi bi-person-circle"></i> Switch Role
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="window.openBookAppointmentModal()">
+          <i class="bi bi-calendar-plus"></i> New Appointment
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="app-content">
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 1: OVERVIEW / DASHBOARD -->
+      <!-- ===================================================================== -->
+      <section id="view-overview">
+        <!-- 4 KPI Summary Cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Patients</div>
+              <div class="stat-value" id="stat-total-patients">0</div>
+              <div class="stat-desc"><i class="bi bi-arrow-up-right text-success"></i> Active clinical records</div>
+            </div>
+            <div class="stat-icon teal"><i class="bi bi-people-fill"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Appointments Today</div>
+              <div class="stat-value" id="stat-appointments-today">0</div>
+              <div class="stat-desc"><i class="bi bi-clock-history"></i> Outpatient slots booked</div>
+            </div>
+            <div class="stat-icon blue"><i class="bi bi-calendar-event"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">On-Duty Doctors</div>
+              <div class="stat-value" id="stat-active-doctors">0</div>
+              <div class="stat-desc"><i class="bi bi-check-circle text-success"></i> Across 6 departments</div>
+            </div>
+            <div class="stat-icon emerald"><i class="bi bi-person-badge-fill"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Revenue Collected</div>
+              <div class="stat-value" id="stat-revenue">₹0</div>
+              <div class="stat-desc"><i class="bi bi-graph-up-arrow text-success"></i> Settled OPD invoices</div>
+            </div>
+            <div class="stat-icon amber"><i class="bi bi-currency-rupee"></i></div>
+          </div>
+        </div>
+
+        <!-- Today's Schedule Table -->
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div>
+              <h3>Today's Outpatient Appointments</h3>
+              <div class="card-subtitle">Real-time consultation queue & token management</div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="window.openBookAppointmentModal()">
+              <i class="bi bi-plus-lg"></i> Book Slot
+            </button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Appointment #</th>
+                    <th>Patient Name</th>
+                    <th>Physician</th>
+                    <th>Department</th>
+                    <th>Scheduled Slot</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="overview-appointments-tbody">
+                  <tr><td colspan="6" class="empty-state"><i class="bi bi-arrow-repeat"></i> Loading schedule...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 2: PATIENTS REGISTRY -->
+      <!-- ===================================================================== -->
+      <section id="view-patients" style="display: none;">
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div class="search-input-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" id="patient-search-input" class="form-control" placeholder="Search by name, code, phone, or blood group...">
+            </div>
+            <button class="btn btn-primary" onclick="window.openRegisterPatientModal()">
+              <i class="bi bi-person-plus-fill"></i> Register New Patient
+            </button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Patient Code</th>
+                    <th>Full Name</th>
+                    <th>Blood Group</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Insurance</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="patients-tbody">
+                  <tr><td colspan="7" class="empty-state">Loading patient directory...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 3: DOCTORS & SPECIALTIES -->
+      <!-- ===================================================================== -->
+      <section id="view-doctors" style="display: none;">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <div>
+              <h3>Specialty Departments</h3>
+              <div class="card-subtitle">Filter consulting physicians by clinical domain</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 16px 24px;">
+            <div id="dept-filter-pills" style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-grid" id="doctors-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 4: APPOINTMENTS & SCHEDULING -->
+      <!-- ===================================================================== -->
+      <section id="view-appointments" style="display: none;">
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div>
+              <h3>Appointment Triage Ledger</h3>
+              <div class="card-subtitle">Track consultation workflow from Scheduled to Completed</div>
+            </div>
+            <button class="btn btn-primary" onclick="window.openBookAppointmentModal()">
+              <i class="bi bi-calendar-plus"></i> Schedule Appointment
+            </button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Appointment ID</th>
+                    <th>Patient Details</th>
+                    <th>Assigned Doctor</th>
+                    <th>Date & Token</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="appointments-tbody">
+                  <tr><td colspan="7" class="empty-state">Loading appointments...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 5: ELECTRONIC MEDICAL RECORDS (EHR) -->
+      <!-- ===================================================================== -->
+      <section id="view-records" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700;">Electronic Health Records (EHR)</h3>
+            <div style="font-size: 13px; color: var(--text-muted);">Clinical diagnosis, vital signs, and digital prescriptions</div>
+          </div>
+        </div>
+        <div id="records-list-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 6: BILLING & INVOICING -->
+      <!-- ===================================================================== -->
+      <section id="view-billing" style="display: none;">
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div>
+              <h3>Billing & Revenue Ledger</h3>
+              <div class="card-subtitle">Manage OPD charges, discounts, taxes, and payments</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Patient Name</th>
+                    <th>Date</th>
+                    <th>Net Amount</th>
+                    <th>Discount</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="billing-tbody">
+                  <tr><td colspan="7" class="empty-state">Loading billing records...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 1: REGISTER NEW PATIENT -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-register-patient">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-person-plus"></i> New Patient Intake</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-register-patient">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="patient-name" class="form-control" required placeholder="e.g. Ramesh Kumar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date of Birth *</label>
+            <input type="date" id="patient-dob" class="form-control" required value="1990-01-01">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Gender *</label>
+            <select id="patient-gender" class="form-select" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Blood Group *</label>
+            <select id="patient-blood-group" class="form-select" required>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+" selected>O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" id="patient-phone" class="form-control" required placeholder="+91 98401 00000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="patient-email" class="form-control" placeholder="patient@example.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Residential Address *</label>
+            <input type="text" id="patient-address" class="form-control" required placeholder="Street address">
+          </div>
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input type="text" id="patient-city" class="form-control" required value="Chennai">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Emergency Contact Name</label>
+            <input type="text" id="patient-emergency-name" class="form-control" placeholder="Relative name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Emergency Contact Phone</label>
+            <input type="tel" id="patient-emergency-phone" class="form-control" placeholder="Phone number">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Known Allergies</label>
+            <input type="text" id="patient-allergies" class="form-control" placeholder="e.g. Penicillin, Sulfa">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Insurance Provider</label>
+            <input type="text" id="patient-insurance" class="form-control" placeholder="e.g. Star Health / Self-Pay">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check2"></i> Register Patient</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 2: SCHEDULE APPOINTMENT -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-book-appointment">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-calendar-plus"></i> Schedule Outpatient Appointment</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-book-appointment">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Patient *</label>
+          <select id="apt-patient-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Clinical Department *</label>
+            <select id="apt-department-select" class="form-select" required>
+              <!-- Populated via JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Attending Doctor *</label>
+            <select id="apt-doctor-select" class="form-select" required>
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Appointment Date *</label>
+            <input type="date" id="apt-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preferred Time Slot *</label>
+            <select id="apt-time" class="form-select" required>
+              <option value="09:30:00">09:30 AM (Slot 1)</option>
+              <option value="10:30:00" selected>10:30 AM (Slot 2)</option>
+              <option value="11:30:00">11:30 AM (Slot 3)</option>
+              <option value="14:00:00">02:00 PM (Slot 4)</option>
+              <option value="15:30:00">03:30 PM (Slot 5)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reason for Consultation *</label>
+          <input type="text" id="apt-reason" class="form-control" required placeholder="e.g. General check-up, Chest discomfort, Migraine evaluation">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-calendar-check"></i> Confirm Booking</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 3: SETTLE INVOICE PAYMENT -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-settle-payment">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-cash-coin"></i> Settle Hospital Invoice</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-settle-payment">
+      <input type="hidden" id="pay-billing-id">
+      <input type="hidden" id="pay-amount">
+      <div class="modal-body">
+        <div style="background: var(--surface-alt); padding: 18px; border-radius: var(--radius-sm); margin-bottom: 18px; text-align: center;">
+          <div style="font-size: 13px; color: var(--text-muted);">Amount Due for Settlement</div>
+          <div style="font-size: 28px; font-weight: 800; color: var(--text-main);" id="pay-amount-display">₹0.00</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Payment Method *</label>
+          <select id="pay-method" class="form-select" required>
+            <option value="UPI">UPI (Google Pay / PhonePe / Paytm)</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Cash">Cash at Counter</option>
+            <option value="Insurance">Third-Party Insurance Claim</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle"></i> Complete Payment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 4: QUICK ROLE SWITCHER (INTERVIEWER PORTAL) -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-role-switcher">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-person-bounding-box"></i> Switch Role Perspective</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Test role-based access control and dashboards instantly across different operational roles:
+      </p>
+      <div id="role-accounts-list">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary modal-close-trigger">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATIONS CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- Core Scripts -->
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
