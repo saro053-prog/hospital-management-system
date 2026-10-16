@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ApexCare Health | Enterprise Hospital Management System (HMS)</title>
-  <meta name="description" content="Production-ready healthcare platform for patient intake, physician scheduling, electronic health records (EHR), and billing.">
+  <meta name="description" content="Production-grade healthcare platform featuring secure RBAC authentication, outpatient triage, inpatient bed matrix, EHR, laboratory diagnostics, pharmacy inventory, and context-aware clinical AI assistant.">
   
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,229 @@
 </head>
 <body>
 
-<div id="app-container">
+<!-- ========================================================================= -->
+<!-- AUTHENTICATION PORTAL (SHOWN WHEN NOT LOGGED IN) -->
+<!-- ========================================================================= -->
+<div id="auth-portal" style="display: none;">
+  <div class="auth-wrapper">
+    <div class="auth-hero">
+      <div class="auth-hero-content">
+        <div class="auth-brand-pill">
+          <i class="bi bi-shield-check"></i> HIPAA & NABH Compliance Architecture
+        </div>
+        <h2>Enterprise Digital Healthcare Platform</h2>
+        <p>ApexCare HMS delivers end-to-end clinical operations, dynamic inpatient bed telemetry, digital laboratory workflows, and AI-assisted patient triage.</p>
+        
+        <div class="auth-features">
+          <div class="auth-feature-item">
+            <i class="bi bi-person-badge"></i>
+            <div>
+              <strong>Multi-Role Clinical Access</strong>
+              <span>Granular RBAC for Admin, Doctors, Nurses, Front Desk, Lab Technicians & Patients.</span>
+            </div>
+          </div>
+          <div class="auth-feature-item">
+            <i class="bi bi-hospital"></i>
+            <div>
+              <strong>Real-Time Ward & Bed Matrix</strong>
+              <span>Live tracking across ICU, Emergency, Surgical, and General inpatient wards.</span>
+            </div>
+          </div>
+          <div class="auth-feature-item">
+            <i class="bi bi-cpu"></i>
+            <div>
+              <strong>Context-Aware Clinical AI Assistant</strong>
+              <span>Symptom assessment, doctor recommendations, and emergency triage in English and Tamil.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-hero-footer">
+          <span><i class="bi bi-lock-fill"></i> 256-Bit SSL Encrypted</span>
+          <span><i class="bi bi-database-check"></i> High-Availability Cluster</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-form-card">
+      <div class="auth-card-header">
+        <div class="brand-icon">
+          <i class="bi bi-hospital"></i>
+        </div>
+        <div>
+          <h3>ApexCare Health</h3>
+          <p>Sign in to access your clinical portal</p>
+        </div>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" data-tab="login">Sign In</button>
+        <button type="button" class="auth-tab-btn" data-tab="register">Register</button>
+        <button type="button" class="auth-tab-btn" data-tab="forgot">Forgot Password</button>
+      </div>
+
+      <!-- Tab 1: Login Form -->
+      <form id="form-auth-login" class="auth-tab-pane active">
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <div class="input-with-icon">
+            <i class="bi bi-envelope"></i>
+            <input type="email" id="login-email" class="form-control" required placeholder="doctor@hospital.org" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label">Password *</label>
+            <a href="javascript:void(0)" class="auth-link-sm" onclick="window.switchAuthTab('forgot')">Forgot?</a>
+          </div>
+          <div class="input-with-icon">
+            <i class="bi bi-key"></i>
+            <input type="password" id="login-password" class="form-control" required placeholder="Enter your password" autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" onclick="window.togglePasswordVisibility('login-password')">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-submit">
+          <i class="bi bi-box-arrow-in-right"></i> Sign In to Portal
+        </button>
+      </form>
+
+      <!-- Tab 2: Register Form -->
+      <form id="form-auth-register" class="auth-tab-pane" style="display: none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="reg-name" class="form-control" required placeholder="e.g. Ramesh Kumar">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" id="reg-phone" class="form-control" required placeholder="+91 98401 00000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" id="reg-email" class="form-control" required placeholder="patient@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div class="input-with-icon">
+              <i class="bi bi-lock"></i>
+              <input type="password" id="reg-password" class="form-control" required placeholder="Min 6 characters" autocomplete="new-password">
+            </div>
+            <div class="password-strength-bar" id="reg-strength-bar"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Role *</label>
+            <select id="reg-role" class="form-select" required>
+              <option value="patient" selected>Patient (Outpatient / Inpatient)</option>
+              <option value="doctor">Consulting Doctor</option>
+              <option value="nurse">Clinical Nurse</option>
+              <option value="receptionist">Front Desk Receptionist</option>
+              <option value="lab_staff">Laboratory Staff</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select id="reg-gender" class="form-select">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" id="reg-dob" class="form-control" value="1995-05-15">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-register-submit">
+          <i class="bi bi-person-check"></i> Create Secure Account
+        </button>
+      </form>
+
+      <!-- Tab 3: Forgot Password Form -->
+      <form id="form-auth-forgot" class="auth-tab-pane" style="display: none;">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+          Enter your registered email address to generate a time-limited 1-hour secure password reset token.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Registered Email Address *</label>
+          <div class="input-with-icon">
+            <i class="bi bi-envelope"></i>
+            <input type="email" id="forgot-email" class="form-control" required placeholder="e.g. arun@example.com">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="btn-forgot-submit">
+          <i class="bi bi-send-check"></i> Generate Recovery Token
+        </button>
+
+        <!-- Reset Token & New Password box (dynamically revealed) -->
+        <div id="reset-token-box" style="display: none; margin-top: 18px; padding: 14px; background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+          <div class="form-group">
+            <label class="form-label">Recovery Token *</label>
+            <input type="text" id="reset-token-input" class="form-control" placeholder="Paste generated token">
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password *</label>
+            <input type="password" id="reset-new-password" class="form-control" placeholder="Min 6 characters">
+          </div>
+          <button type="button" class="btn btn-success btn-block" onclick="window.handleResetPasswordSubmit()">
+            <i class="bi bi-shield-lock"></i> Set New Password
+          </button>
+        </div>
+      </form>
+
+      <!-- 1-Click Demo Accounts Chips -->
+      <div class="auth-demo-section">
+        <div class="demo-section-title">
+          <span>Demo Perspectives (1-Click Login)</span>
+        </div>
+        <div class="demo-chips-grid">
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('admin@hospital.org', 'Password@123')">
+            <span class="chip-role admin">Admin</span>
+            <span class="chip-name">Dr. Vance</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('dr.sharma@hospital.org', 'Password@123')">
+            <span class="chip-role doctor">Doctor</span>
+            <span class="chip-name">Dr. Sharma</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('nurse.sarah@hospital.org', 'Password@123')">
+            <span class="chip-role nurse">Nurse</span>
+            <span class="chip-name">Sarah J.</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('receptionist@hospital.org', 'Password@123')">
+            <span class="chip-role receptionist">Reception</span>
+            <span class="chip-name">Meera N.</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('lab.tech@hospital.org', 'Password@123')">
+            <span class="chip-role lab_staff">Lab Staff</span>
+            <span class="chip-name">David Chen</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="window.quickDemoLogin('arun@example.com', 'Password@123')">
+            <span class="chip-role patient">Patient</span>
+            <span class="chip-name">Arun Kumar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MAIN APPLICATION WORKSPACE (PROTECTED) -->
+<!-- ========================================================================= -->
+<div id="app-container" style="display: none;">
   <!-- SIDEBAR NAVIGATION -->
   <aside class="app-sidebar" id="app-sidebar">
     <div class="sidebar-header">
@@ -32,47 +254,71 @@
       </div>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-label">Core Modules</div>
+    <nav class="sidebar-nav" id="sidebar-nav-container">
+      <div class="nav-label">Core Operations</div>
       <a class="nav-item active" data-view="overview">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
       </a>
-      <a class="nav-item" data-view="patients">
+      <a class="nav-item" data-view="patients" data-roles="admin,doctor,nurse,receptionist">
         <i class="bi bi-people"></i>
         <span>Patients Registry</span>
       </a>
-      <a class="nav-item" data-view="doctors">
+      <a class="nav-item" data-view="doctors" data-roles="admin,receptionist,patient">
         <i class="bi bi-person-badge"></i>
-        <span>Doctors & Staff</span>
+        <span>Doctors Directory</span>
       </a>
       <a class="nav-item" data-view="appointments">
         <i class="bi bi-calendar2-check"></i>
-        <span>Appointments</span>
+        <span>Appointments Queue</span>
       </a>
 
-      <div class="nav-label">Clinical & Finance</div>
+      <div class="nav-label" data-roles="admin,doctor,nurse,lab_staff">Clinical & Inpatient</div>
+      <a class="nav-item" data-view="wards" data-roles="admin,doctor,nurse">
+        <i class="bi bi-door-open"></i>
+        <span>Wards & Bed Matrix</span>
+      </a>
+      <a class="nav-item" data-view="nurses" data-roles="admin,nurse,doctor">
+        <i class="bi bi-heart-pulse"></i>
+        <span>Nurse Station & Vitals</span>
+      </a>
+      <a class="nav-item" data-view="laboratory" data-roles="admin,doctor,lab_staff">
+        <i class="bi bi-virus"></i>
+        <span>Lab & Diagnostics</span>
+      </a>
+      <a class="nav-item" data-view="pharmacy" data-roles="admin,doctor,nurse,receptionist">
+        <i class="bi bi-capsule"></i>
+        <span>Pharmacy Inventory</span>
+      </a>
       <a class="nav-item" data-view="records">
         <i class="bi bi-file-earmark-medical"></i>
-        <span>Medical EHR</span>
+        <span>Medical Records (EHR)</span>
       </a>
-      <a class="nav-item" data-view="billing">
+
+      <div class="nav-label" data-roles="admin,receptionist,patient">Finance & Ledger</div>
+      <a class="nav-item" data-view="billing" data-roles="admin,receptionist,patient">
         <i class="bi bi-credit-card-2-front"></i>
-        <span>Billing & Ledger</span>
+        <span>Billing & Invoices</span>
       </a>
     </nav>
 
+    <!-- Logged In User Pill -->
     <div class="sidebar-user">
       <div class="user-meta">
-        <div class="user-avatar" id="user-display-avatar">R</div>
+        <div class="user-avatar" id="user-display-avatar">U</div>
         <div class="user-text">
-          <div class="user-name" id="user-display-name">Dr. Robert Vance</div>
-          <span class="user-role-badge" id="user-display-role">admin</span>
+          <div class="user-name" id="user-display-name">Loading...</div>
+          <span class="user-role-badge" id="user-display-role">...</span>
         </div>
       </div>
-      <button class="btn btn-outline btn-sm" style="color: #cbd5e1; border-color: rgba(255,255,255,0.2);" onclick="window.openRoleSwitcherModal()" title="Switch User Role">
-        <i class="bi bi-arrow-left-right"></i>
-      </button>
+      <div style="display: flex; gap: 6px;">
+        <button class="btn btn-outline btn-sm" style="color: #cbd5e1; border-color: rgba(255,255,255,0.2); padding: 6px 10px;" onclick="window.openRoleSwitcherModal()" title="Switch Role Perspective">
+          <i class="bi bi-arrow-left-right"></i>
+        </button>
+        <button class="btn btn-danger btn-sm" style="padding: 6px 10px;" onclick="window.handleLogout()" title="Sign Out">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
     </div>
   </aside>
 
@@ -91,15 +337,39 @@
       </div>
 
       <div class="topbar-right">
+        <!-- Live Status Pill -->
         <div class="system-status-pill">
           <div class="status-dot"></div>
-          <span>Clinical Cluster Online</span>
+          <span>Cluster Online</span>
         </div>
+
+        <!-- In-App Notifications Dropdown -->
+        <div class="notifications-dropdown-wrap">
+          <button class="topbar-icon-btn" id="notifications-btn" onclick="window.toggleNotificationsDropdown()" title="Notifications">
+            <i class="bi bi-bell"></i>
+            <span class="notification-badge" id="notification-badge-count" style="display: none;">0</span>
+          </button>
+          <div class="notifications-dropdown" id="notifications-dropdown" style="display: none;">
+            <div class="notif-header">
+              <span>System Alerts & Notifications</span>
+              <button type="button" class="notif-clear-btn" onclick="window.markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="notif-list" id="notifications-list">
+              <div class="empty-state-sm">No new notifications.</div>
+            </div>
+          </div>
+        </div>
+
         <button class="btn btn-outline btn-sm" onclick="window.openRoleSwitcherModal()">
-          <i class="bi bi-person-circle"></i> Switch Role
+          <i class="bi bi-person-bounding-box"></i> Switch Role
         </button>
+
         <button class="btn btn-primary btn-sm" onclick="window.openBookAppointmentModal()">
           <i class="bi bi-calendar-plus"></i> New Appointment
+        </button>
+
+        <button class="btn btn-secondary btn-sm" onclick="window.handleLogout()" title="Sign Out">
+          <i class="bi bi-box-arrow-right"></i>
         </button>
       </div>
     </header>
@@ -135,7 +405,7 @@
             <div class="stat-info">
               <div class="stat-label">On-Duty Doctors</div>
               <div class="stat-value" id="stat-active-doctors">0</div>
-              <div class="stat-desc"><i class="bi bi-check-circle text-success"></i> Across 6 departments</div>
+              <div class="stat-desc"><i class="bi bi-check-circle text-success"></i> Across 6 specialties</div>
             </div>
             <div class="stat-icon emerald"><i class="bi bi-person-badge-fill"></i></div>
           </div>
@@ -147,6 +417,19 @@
               <div class="stat-desc"><i class="bi bi-graph-up-arrow text-success"></i> Settled OPD invoices</div>
             </div>
             <div class="stat-icon amber"><i class="bi bi-currency-rupee"></i></div>
+          </div>
+        </div>
+
+        <!-- Bed Occupancy Snapshot banner -->
+        <div class="card-box" style="margin-bottom: 24px; padding: 18px 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h4 style="margin: 0; font-size: 16px; font-weight: 700;"><i class="bi bi-hospital text-primary"></i> Inpatient Ward Occupancy Snapshot</h4>
+              <p style="margin: 4px 0 0; font-size: 13px; color: var(--text-muted);">Real-time telemetry across Intensive Care, Emergency, Surgical and General wards</p>
+            </div>
+            <div id="quick-ward-stats" style="display: flex; gap: 12px; align-items: center;">
+              <!-- Populated via JS -->
+            </div>
           </div>
         </div>
 
@@ -281,7 +564,262 @@
       </section>
 
       <!-- ===================================================================== -->
-      <!-- VIEW 5: ELECTRONIC MEDICAL RECORDS (EHR) -->
+      <!-- VIEW 5: WARDS & INPATIENT BED MATRIX -->
+      <!-- ===================================================================== -->
+      <section id="view-wards" style="display: none;">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <div>
+              <h3>Inpatient Wards & Real-Time Bed Occupancy</h3>
+              <div class="card-subtitle">Visual matrix of critical care and general admission beds</div>
+            </div>
+            <div class="bed-legend">
+              <span class="legend-badge available"><i class="bi bi-check-circle-fill"></i> Available</span>
+              <span class="legend-badge occupied"><i class="bi bi-person-fill"></i> Occupied</span>
+              <span class="legend-badge maintenance"><i class="bi bi-cone-striped"></i> Cleaning / Maint.</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="wards-summary-grid" id="wards-summary-container">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div>
+              <h4>Bed Allocation Matrix</h4>
+              <div class="card-subtitle">Select bed to view patient details or update status</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <select id="bed-ward-filter" class="form-select form-select-sm" style="width: auto;">
+                <option value="">All Hospital Wards</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="bed-grid" id="beds-container">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 6: NURSE STATION & VITALS TELEMETRY -->
+      <!-- ===================================================================== -->
+      <section id="view-nurses" style="display: none;">
+        <div class="nurse-layout-grid">
+          <!-- Duty Roster Card -->
+          <div class="card-box">
+            <div class="card-header-flex">
+              <div>
+                <h3>On-Duty Nursing Staff</h3>
+                <div class="card-subtitle">CCU, General, and Trauma shifts</div>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="hms-table">
+                  <thead>
+                    <tr>
+                      <th>Nurse</th>
+                      <th>Assigned Ward</th>
+                      <th>Shift</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="nurse-roster-tbody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Record Patient Vitals Box -->
+          <div class="card-box">
+            <div class="card-header-flex">
+              <div>
+                <h3>Record Patient Vitals</h3>
+                <div class="card-subtitle">Real-time physiological telemetry intake</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="form-record-vitals">
+                <div class="form-group">
+                  <label class="form-label">Select Inpatient / Outpatient *</label>
+                  <select id="vitals-patient-select" class="form-select" required>
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Blood Pressure (mmHg) *</label>
+                    <input type="text" id="vitals-bp" class="form-control" required placeholder="120/80">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Heart Rate (BPM) *</label>
+                    <input type="number" id="vitals-hr" class="form-control" required placeholder="72">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">SpO2 Level (%) *</label>
+                    <input type="number" id="vitals-spo2" class="form-control" required placeholder="98" min="70" max="100">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Temperature (°F) *</label>
+                    <input type="number" step="0.1" id="vitals-temp" class="form-control" required placeholder="98.6">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Respiratory Rate (/min)</label>
+                    <input type="number" id="vitals-resp" class="form-control" placeholder="16">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Blood Glucose (mg/dL)</label>
+                    <input type="number" id="vitals-glucose" class="form-control" placeholder="110">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nurse Clinical Notes</label>
+                  <input type="text" id="vitals-notes" class="form-control" placeholder="Alert, oriented, stable peripheral pulse">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                  <i class="bi bi-heart-pulse-fill"></i> Save Telemetry Log
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Vitals History Table -->
+        <div class="card-box" style="margin-top: 24px;">
+          <div class="card-header-flex">
+            <div>
+              <h3>Recent Vitals Log & Patient Telemetry</h3>
+              <div class="card-subtitle">Physiological records submitted by nursing team</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Patient</th>
+                    <th>Blood Pressure</th>
+                    <th>Heart Rate</th>
+                    <th>SpO2</th>
+                    <th>Temp</th>
+                    <th>Blood Sugar</th>
+                    <th>Recorded By</th>
+                  </tr>
+                </thead>
+                <tbody id="vitals-history-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 7: LABORATORY & DIAGNOSTICS -->
+      <!-- ===================================================================== -->
+      <section id="view-laboratory" style="display: none;">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <div>
+              <h3>Diagnostic Test Catalog</h3>
+              <div class="card-subtitle">Available hematology, biochemistry, and imaging panels</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 16px 24px;">
+            <div class="lab-catalog-grid" id="lab-tests-catalog">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="card-box">
+          <div class="card-header-flex">
+            <div>
+              <h3>Active Laboratory Workorders</h3>
+              <div class="card-subtitle">Specimen intake, analysis, and pathologist sign-off</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="window.openNewLabOrderModal()">
+              <i class="bi bi-plus-circle"></i> Create Lab Order
+            </button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Patient</th>
+                    <th>Ordered Test</th>
+                    <th>Ordered Date</th>
+                    <th>Specimen Status</th>
+                    <th>Results / Summary</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lab-orders-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 8: PHARMACY & DISPENSARY -->
+      <!-- ===================================================================== -->
+      <section id="view-pharmacy" style="display: none;">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <div class="search-input-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" id="pharmacy-search-input" class="form-control" placeholder="Search medicines by generic name, brand, or code...">
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" onclick="window.openDispenseModal()">
+                <i class="bi bi-prescription2"></i> Dispense Medication
+              </button>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="hms-table">
+                <thead>
+                  <tr>
+                    <th>Item Code</th>
+                    <th>Medicine Name & Generic</th>
+                    <th>Dosage / Category</th>
+                    <th>Current Stock</th>
+                    <th>Unit Price</th>
+                    <th>Batch / Expiry</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="pharmacy-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 9: ELECTRONIC MEDICAL RECORDS (EHR) -->
       <!-- ===================================================================== -->
       <section id="view-records" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -296,7 +834,7 @@
       </section>
 
       <!-- ===================================================================== -->
-      <!-- VIEW 6: BILLING & INVOICING -->
+      <!-- VIEW 10: BILLING & INVOICING -->
       <!-- ===================================================================== -->
       <section id="view-billing" style="display: none;">
         <div class="card-box">
@@ -331,6 +869,54 @@
 
     </div>
   </main>
+</div>
+
+<!-- ========================================================================= -->
+<!-- FLOATING AI CLINICAL ASSISTANT WIDGET -->
+<!-- ========================================================================= -->
+<div id="ai-widget-bubble" onclick="window.toggleAiDrawer()" title="ApexCare AI Health Assistant">
+  <div class="ai-bubble-icon">
+    <i class="bi bi-robot"></i>
+  </div>
+  <div class="ai-bubble-label">AI Triage</div>
+</div>
+
+<div id="ai-chat-drawer" class="ai-chat-drawer" style="display: none;">
+  <div class="ai-drawer-header">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="ai-avatar"><i class="bi bi-robot"></i></div>
+      <div>
+        <h4 style="margin: 0; font-size: 15px; font-weight: 700;">ApexCare Clinical AI</h4>
+        <span style="font-size: 11px; color: #ccfbf1;"><i class="bi bi-circle-fill text-success" style="font-size: 8px;"></i> Live EHR & Triage Active</span>
+      </div>
+    </div>
+    <button class="ai-close-btn" onclick="window.toggleAiDrawer()">&times;</button>
+  </div>
+
+  <div class="ai-drawer-body" id="ai-chat-messages">
+    <div class="ai-message assistant">
+      <div class="ai-msg-content">
+        Hello! I am your <strong>ApexCare Clinical AI Assistant</strong>.
+        I can help you check available beds, lookup doctor schedules, analyze symptoms, guide you through emergency protocols, or answer questions in <strong>English and Tamil</strong>.
+        <br><br>
+        How can I assist you today?
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-quick-prompts">
+    <button type="button" class="ai-prompt-chip" onclick="window.sendPresetAiMessage('What doctors are available in Cardiology?')">Cardiology Doctors</button>
+    <button type="button" class="ai-prompt-chip" onclick="window.sendPresetAiMessage('How many ICU beds are currently available?')">Check ICU Beds</button>
+    <button type="button" class="ai-prompt-chip" onclick="window.sendPresetAiMessage('Emergency! What are the hospital hotline numbers?')">Emergency Hotline</button>
+    <button type="button" class="ai-prompt-chip" onclick="window.sendPresetAiMessage('Enakku fever and headache irukku. Enna seiyanum?')">Tamil Triage</button>
+  </div>
+
+  <form id="form-ai-chat" class="ai-drawer-footer">
+    <input type="text" id="ai-chat-input" class="form-control" placeholder="Type clinical query or symptom description..." autocomplete="off" required>
+    <button type="submit" class="btn btn-primary" id="btn-send-ai">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </form>
 </div>
 
 <!-- ========================================================================= -->
@@ -532,7 +1118,7 @@
 </div>
 
 <!-- ========================================================================= -->
-<!-- MODAL 4: QUICK ROLE SWITCHER (INTERVIEWER PORTAL) -->
+<!-- MODAL 4: ROLE PERSPECTIVE SWITCHER -->
 <!-- ========================================================================= -->
 <div class="modal-overlay" id="modal-role-switcher">
   <div class="modal-box">
@@ -542,7 +1128,7 @@
     </div>
     <div class="modal-body">
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
-        Test role-based access control and dashboards instantly across different operational roles:
+        Test RBAC privileges, module access, and dashboard views across authentic healthcare roles:
       </p>
       <div id="role-accounts-list">
         <!-- Populated dynamically via JS -->
@@ -551,6 +1137,171 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary modal-close-trigger">Close</button>
     </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 5: ALLOCATE / UPDATE BED -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-allocate-bed">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-door-open"></i> Manage Inpatient Bed</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-manage-bed">
+      <input type="hidden" id="manage-bed-id">
+      <div class="modal-body">
+        <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 14px;">
+          <div style="font-weight: 700;" id="bed-modal-number">Bed #</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="bed-modal-ward">Ward</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bed Status *</label>
+          <select id="bed-modal-status" class="form-select" required>
+            <option value="Available">Available (Vacant & Ready)</option>
+            <option value="Occupied">Occupied (Patient Admitted)</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Cleaning">Cleaning / Sanitization</option>
+            <option value="Maintenance">Under Maintenance</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="bed-patient-group">
+          <label class="form-label">Assign Patient</label>
+          <select id="bed-patient-select" class="form-select">
+            <option value="">No Patient (Vacant)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Bed Status</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 6: CREATE LAB ORDER -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-lab-order">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-virus"></i> Create Diagnostic Test Order</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-lab-order">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Patient *</label>
+          <select id="lab-order-patient-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Diagnostic Test *</label>
+          <select id="lab-order-test-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ordering Physician *</label>
+          <select id="lab-order-doctor-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Issue Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 7: SUBMIT LAB RESULT -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-lab-result">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-file-earmark-check"></i> Submit Laboratory Results</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-lab-result">
+      <input type="hidden" id="lab-result-order-id">
+      <div class="modal-body">
+        <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 14px;">
+          <div style="font-weight: 700;" id="lab-result-test-title">Test Name</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="lab-result-patient-title">Patient</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Specimen Status *</label>
+          <select id="lab-result-status" class="form-select" required>
+            <option value="Completed">Completed (Final Sign-off)</option>
+            <option value="In Progress">In Progress (Analyzing)</option>
+            <option value="Sample Collected">Sample Collected</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Diagnostic Result Findings *</label>
+          <textarea id="lab-result-text" class="form-control" rows="3" required placeholder="e.g. Hemoglobin: 14.2 g/dL, WBC: 7,500 /uL, Platelets: 280,000 /uL. All markers within normal limits."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check2"></i> Submit & Sign</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 8: DISPENSE MEDICATION -->
+<!-- ========================================================================= -->
+<div class="modal-overlay" id="modal-dispense-med">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h4><i class="bi bi-capsule"></i> Dispense Pharmacy Medication</h4>
+      <button class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="form-dispense-med">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Patient *</label>
+          <select id="dispense-patient-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Medicine *</label>
+          <select id="dispense-medicine-select" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity to Dispense *</label>
+            <input type="number" id="dispense-quantity" class="form-control" required min="1" value="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dosage Instructions</label>
+            <input type="text" id="dispense-instructions" class="form-control" placeholder="1 tablet twice daily after meals">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close-trigger">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Dispense & Deduct Stock</button>
+      </div>
+    </form>
   </div>
 </div>
 

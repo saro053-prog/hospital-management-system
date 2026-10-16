@@ -1,6 +1,6 @@
 /**
  * Hospital Management System - REST API Client
- * Manages HTTP communication, JWT headers, and resource endpoints
+ * Manages HTTP communication, JWT authentication headers, and domain endpoints.
  */
 
 const API_BASE = '/api';
@@ -17,7 +17,8 @@ const api = {
 
   getUser() {
     try {
-      return JSON.parse(localStorage.getItem('hms_auth_user') || 'null');
+      const stored = localStorage.getItem('hms_auth_user');
+      return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
     }
@@ -47,6 +48,11 @@ const api = {
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
+        // If 401 Unauthorized, token might be invalid or expired
+        if (response.status === 401 && !endpoint.startsWith('/auth/login')) {
+          this.logout();
+          window.dispatchEvent(new CustomEvent('hms_unauthorized'));
+        }
         throw new Error(data.message || `HTTP ${response.status}: Request failed.`);
       }
 
@@ -57,7 +63,9 @@ const api = {
     }
   },
 
-  // Auth endpoints
+  // =========================================================================
+  // AUTHENTICATION & SESSION
+  // =========================================================================
   async login(email, password) {
     const res = await this.request('/auth/login', {
       method: 'POST',
@@ -68,6 +76,27 @@ const api = {
       this.setUser(res.user);
     }
     return res;
+  },
+
+  async register(payload) {
+    return this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async forgotPassword(email) {
+    return this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  },
+
+  async resetPassword(token, newPassword) {
+    return this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password: newPassword })
+    });
   },
 
   async getMe() {
@@ -83,12 +112,16 @@ const api = {
     this.setUser(null);
   },
 
-  // Stats
+  // =========================================================================
+  // STATS & DASHBOARD
+  // =========================================================================
   async getDashboardStats() {
     return this.request('/stats/dashboard');
   },
 
-  // Patients
+  // =========================================================================
+  // PATIENTS
+  // =========================================================================
   async getPatients(search = '') {
     const q = search ? `?search=${encodeURIComponent(search)}` : '';
     return this.request(`/patients${q}`);
@@ -105,7 +138,9 @@ const api = {
     });
   },
 
-  // Doctors & Departments
+  // =========================================================================
+  // DOCTORS & DEPARTMENTS
+  // =========================================================================
   async getDoctors(deptId = null) {
     const q = deptId ? `?department_id=${deptId}` : '';
     return this.request(`/doctors${q}`);
@@ -115,7 +150,9 @@ const api = {
     return this.request('/doctors/departments');
   },
 
-  // Appointments
+  // =========================================================================
+  // APPOINTMENTS
+  // =========================================================================
   async getAppointments(status = '', date = '') {
     const params = new URLSearchParams();
     if (status) params.append('status', status);
@@ -138,7 +175,102 @@ const api = {
     });
   },
 
-  // Medical Records (EHR)
+  // =========================================================================
+  // WARDS & BED MANAGEMENT
+  // =========================================================================
+  async getWards() {
+    return this.request('/wards');
+  },
+
+  async getBeds(wardId = null, status = '') {
+    const params = new URLSearchParams();
+    if (wardId) params.append('ward_id', wardId);
+    if (status) params.append('status', status);
+    const q = params.toString() ? `?${params.toString()}` : '';
+    return this.request(`/wards/beds${q}`);
+  },
+
+  async updateBed(bedId, payload) {
+    return this.request(`/wards/beds/${bedId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // =========================================================================
+  // NURSES & VITALS TELEMETRY
+  // =========================================================================
+  async getNurses() {
+    return this.request('/nurses');
+  },
+
+  async getNurseDuty() {
+    return this.request('/nurses/duty');
+  },
+
+  async getNurseVitals(patientId = null) {
+    const q = patientId ? `?patient_id=${patientId}` : '';
+    return this.request(`/nurses/vitals${q}`);
+  },
+
+  async recordVitals(payload) {
+    return this.request('/nurses/vitals', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // =========================================================================
+  // LABORATORY & DIAGNOSTICS
+  // =========================================================================
+  async getLabTests() {
+    return this.request('/laboratory/tests');
+  },
+
+  async getLabOrders(status = '') {
+    const q = status ? `?status=${status}` : '';
+    return this.request(`/laboratory/orders${q}`);
+  },
+
+  async createLabOrder(payload) {
+    return this.request('/laboratory/orders', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async updateLabOrder(id, payload) {
+    return this.request(`/laboratory/orders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // =========================================================================
+  // PHARMACY & DISPENSING
+  // =========================================================================
+  async getMedicines(search = '') {
+    const q = search ? `?search=${encodeURIComponent(search)}` : '';
+    return this.request(`/pharmacy/medicines${q}`);
+  },
+
+  async addMedicine(payload) {
+    return this.request('/pharmacy/medicines', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async dispenseMedicine(payload) {
+    return this.request('/pharmacy/dispense', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // =========================================================================
+  // MEDICAL RECORDS (EHR)
+  // =========================================================================
   async getMedicalRecords(patientId = null) {
     const q = patientId ? `?patient_id=${patientId}` : '';
     return this.request(`/records${q}`);
@@ -151,7 +283,9 @@ const api = {
     });
   },
 
-  // Billing
+  // =========================================================================
+  // BILLING & INVOICING
+  // =========================================================================
   async getBillingInvoices(status = '') {
     const q = status ? `?status=${status}` : '';
     return this.request(`/billing${q}`);
@@ -168,6 +302,31 @@ const api = {
     return this.request(`/billing/${id}/pay`, {
       method: 'POST',
       body: JSON.stringify(payload)
+    });
+  },
+
+  // =========================================================================
+  // NOTIFICATIONS
+  // =========================================================================
+  async getNotifications() {
+    return this.request('/notifications');
+  },
+
+  async markNotificationRead(id) {
+    return this.request(`/notifications/${id}/read`, { method: 'PUT' });
+  },
+
+  async markAllNotificationsRead() {
+    return this.request('/notifications/read-all', { method: 'PUT' });
+  },
+
+  // =========================================================================
+  // AI CLINICAL ASSISTANT
+  // =========================================================================
+  async sendAiChat(message, patientId = null) {
+    return this.request('/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, patient_id: patientId })
     });
   }
 };
